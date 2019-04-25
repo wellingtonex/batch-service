@@ -9,6 +9,7 @@ public class TrataExcecaoLeitura implements ExceptionHandler {
 
 	@Override
 	public void handleException(RepeatContext context, Throwable throwable) throws Throwable {
+		throwable.printStackTrace();
 		if(throwable instanceof NoSuchElementException) {
 			System.out.println("Erro, não fazer nada");
 		}
