@@ -12,7 +12,7 @@ public class ItemCountListener implements ChunkListener {
     @Override
     public void afterChunk(ChunkContext context) {
          
-        int count = context.getStepContext().getStepExecution().getReadCount();
+        int count = context.getStepContext().getStepExecution().getWriteCount();
         System.out.println("ItemCount: " + count);
     }
      

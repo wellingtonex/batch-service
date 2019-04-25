@@ -1,7 +1,10 @@
 package com.marcosbarbero.wd.batch;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -13,8 +16,11 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 
@@ -22,6 +28,7 @@ import org.springframework.stereotype.Service;
 @Service
 @EnableBatchProcessing
 @EnableAsync
+@EnableScheduling
 public class JobExecuteServce {
 
 	@Autowired
@@ -32,6 +39,14 @@ public class JobExecuteServce {
 	
 	@Autowired
     public StepBuilderFactory stepBuilderFactory;
+	
+	@Autowired
+	public TaskExecutor taskExecutor;
+	
+	@PostConstruct
+	public void agendar() {
+		executar();
+	}
     
 	@Async
     public void executar() {
@@ -68,6 +83,7 @@ public class JobExecuteServce {
             .incrementer(new RunIdIncrementer())            
             .flow(step1)
             .end()
+            .listener(new JobCompletionNotificationListenerTeste())
             .build();
     }
 
@@ -75,10 +91,13 @@ public class JobExecuteServce {
     private Step step1(PersonWriter writer, List<String> nomes) {
         return stepBuilderFactory.get("step1")
             .<String, String> chunk(3)
-            .reader(new PersonItemReader(nomes))
+            .reader(new PersonItemReader(Collections.synchronizedList(nomes)))
             .processor(processor())
             .writer(writer)
+            .taskExecutor(taskExecutor)
             .listener(new ItemCountListener())
+            .exceptionHandler(new TrataExcecaoLeitura())
+//            .throttleLimit(2)
             .build();
     }
 	

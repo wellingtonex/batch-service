@@ -47,18 +47,18 @@ import org.springframework.core.io.ClassPathResource;
 @EnableBatchProcessing
 public class BatchConfiguration extends DefaultBatchConfigurer {
 
-	private final JobBuilderFactory jobBuilderFactory;
+	//private final JobBuilderFactory jobBuilderFactory;
 
-	private final StepBuilderFactory stepBuilderFactory;
+	//private final StepBuilderFactory stepBuilderFactory;
 
-	private final DataSource dataSource;
+	//private final DataSource dataSource;
 
-	public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory,
-			DataSource dataSource) {
-		this.jobBuilderFactory = jobBuilderFactory;
-		this.stepBuilderFactory = stepBuilderFactory;
-		this.dataSource = dataSource;
-	}
+//	public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory,
+//			DataSource dataSource) {
+//		this.jobBuilderFactory = jobBuilderFactory;
+//		this.stepBuilderFactory = stepBuilderFactory;
+//		this.dataSource = dataSource;
+//	}
 	
 	@Override
     public void setDataSource(DataSource dataSource) {
@@ -66,73 +66,73 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
         // initialize will use a Map based JobRepository (instead of database)
     }
 
-	// tag::readerwriterprocessor[]
-	@Bean
-	public FlatFileItemReader<Autobot> reader() {
-		FlatFileItemReader<Autobot> reader = new FlatFileItemReader<>();
-		reader.setResource(new ClassPathResource("sample-data.csv"));
-		reader.setLineMapper(new DefaultLineMapper<Autobot>() {
-			{
-				setLineTokenizer(new DelimitedLineTokenizer() {
-					{
-						setNames(new String[] { "name", "car" });
-					}
-				});
-				setFieldSetMapper(new BeanWrapperFieldSetMapper<Autobot>() {
-					{
-						setTargetType(Autobot.class);
-					}
-				});
-			}
-		});
-		return reader;
-	}
-	
-	public AutobotItemReaderIterator readerIterator() {
-		
-		
-		Autobot autobot1 = new Autobot("Fiesta", "Fraco");
-		Autobot autobot2 = new Autobot("Focus", "Feio");
-		Autobot autobot3 = new Autobot("Fusion", "Beberrão");
-		Autobot autobot4 = new Autobot("KA", "Nem é carro");
-		Autobot autobot5 = new Autobot("Ranger", "Para quem gosta de aparecer");
-		
-		List<Autobot> autobots = Arrays.asList(autobot1, autobot2, autobot3, autobot4, autobot5);
-		
-		return new AutobotItemReaderIterator(autobots);
-	}
-
-	@Bean
-	public AutobotItemProcessor processor() {
-		return new AutobotItemProcessor();
-	}
-
-	@Bean
-	public JdbcBatchItemWriter<Autobot> writer() {
-		JdbcBatchItemWriter<Autobot> writer = new JdbcBatchItemWriter<>();
-		writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
-		writer.setSql("INSERT INTO autobot (name, car) VALUES (:name, :car)");
-		writer.setDataSource(this.dataSource);
-		return writer;
-	}
-	// end::readerwriterprocessor[]
-
-	// tag::jobstep[]
-	@Bean
-	public Job importAutobotJob(JobCompletionNotificationListener listener) {
-		return jobBuilderFactory.get("importAutobotJob").incrementer(new RunIdIncrementer()).listener(listener)
-				.flow(step1()).end().build();
-	}
-
-	@Bean
-	public Step step1() {
-		return stepBuilderFactory.get("step1")
-				.<Autobot, Autobot>chunk(10)
-				.reader(reader())
-				.processor(processor())
-				.writer(writer())
-				.listener(new ItemCountListener())
-				.build();
-	}
-	// end::jobstep[]
+//	// tag::readerwriterprocessor[]
+//	@Bean
+//	public FlatFileItemReader<Autobot> reader() {
+//		FlatFileItemReader<Autobot> reader = new FlatFileItemReader<>();
+//		reader.setResource(new ClassPathResource("sample-data.csv"));
+//		reader.setLineMapper(new DefaultLineMapper<Autobot>() {
+//			{
+//				setLineTokenizer(new DelimitedLineTokenizer() {
+//					{
+//						setNames(new String[] { "name", "car" });
+//					}
+//				});
+//				setFieldSetMapper(new BeanWrapperFieldSetMapper<Autobot>() {
+//					{
+//						setTargetType(Autobot.class);
+//					}
+//				});
+//			}
+//		});
+//		return reader;
+//	}
+//	
+//	public AutobotItemReaderIterator readerIterator() {
+//		
+//		
+//		Autobot autobot1 = new Autobot("Fiesta", "Fraco");
+//		Autobot autobot2 = new Autobot("Focus", "Feio");
+//		Autobot autobot3 = new Autobot("Fusion", "Beberrão");
+//		Autobot autobot4 = new Autobot("KA", "Nem é carro");
+//		Autobot autobot5 = new Autobot("Ranger", "Para quem gosta de aparecer");
+//		
+//		List<Autobot> autobots = Arrays.asList(autobot1, autobot2, autobot3, autobot4, autobot5);
+//		
+//		return new AutobotItemReaderIterator(autobots);
+//	}
+//
+//	@Bean
+//	public AutobotItemProcessor processor() {
+//		return new AutobotItemProcessor();
+//	}
+//
+//	@Bean
+//	public JdbcBatchItemWriter<Autobot> writer() {
+//		JdbcBatchItemWriter<Autobot> writer = new JdbcBatchItemWriter<>();
+//		writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
+//		writer.setSql("INSERT INTO autobot (name, car) VALUES (:name, :car)");
+//		writer.setDataSource(this.dataSource);
+//		return writer;
+//	}
+//	// end::readerwriterprocessor[]
+//
+//	// tag::jobstep[]
+//	@Bean
+//	public Job importAutobotJob(JobCompletionNotificationListener listener) {
+//		return jobBuilderFactory.get("importAutobotJob").incrementer(new RunIdIncrementer()).listener(listener)
+//				.flow(step1()).end().build();
+//	}
+//
+//	@Bean
+//	public Step step1() {
+//		return stepBuilderFactory.get("step1")
+//				.<Autobot, Autobot>chunk(10)
+//				.reader(reader())
+//				.processor(processor())
+//				.writer(writer())
+//				.listener(new ItemCountListener())
+//				.build();
+//	}
+//	// end::jobstep[]
 }
