@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
+
 /**
  * @author Marcos Barbero
  * @since 2018-02-10
@@ -125,8 +126,13 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 
 	@Bean
 	public Step step1() {
-		return stepBuilderFactory.get("step1").<Autobot, Autobot>chunk(10).reader(reader()).processor(processor())
-				.writer(writer()).build();
+		return stepBuilderFactory.get("step1")
+				.<Autobot, Autobot>chunk(10)
+				.reader(reader())
+				.processor(processor())
+				.writer(writer())
+				.listener(new ItemCountListener())
+				.build();
 	}
 	// end::jobstep[]
 }
