@@ -16,6 +16,9 @@
 
 package com.marcosbarbero.wd.batch;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
@@ -82,6 +85,20 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 			}
 		});
 		return reader;
+	}
+	
+	public AutobotItemReaderIterator readerIterator() {
+		
+		
+		Autobot autobot1 = new Autobot("Fiesta", "Fraco");
+		Autobot autobot2 = new Autobot("Focus", "Feio");
+		Autobot autobot3 = new Autobot("Fusion", "Beberrão");
+		Autobot autobot4 = new Autobot("KA", "Nem é carro");
+		Autobot autobot5 = new Autobot("Ranger", "Para quem gosta de aparecer");
+		
+		List<Autobot> autobots = Arrays.asList(autobot1, autobot2, autobot3, autobot4, autobot5);
+		
+		return new AutobotItemReaderIterator(autobots);
 	}
 
 	@Bean
